@@ -1,0 +1,13 @@
+{
+    "code-runner.executorMap": {
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ -std=c++17 $fileName hash.cpp block.cpp -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        //                                        add new files
+    },
+    "files.associations": {
+        "sstream": "cpp",
+        "iomanip": "cpp",
+        "xlocmon": "cpp",
+        "xloctime": "cpp"
+    }
+}
