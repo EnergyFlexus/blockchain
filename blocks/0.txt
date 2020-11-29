@@ -1,4 +1,4 @@
 
 0
-desc: gen
-data
+genesis block
+Hello, blockchain!

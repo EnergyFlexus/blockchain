@@ -9,6 +9,7 @@
                 "${file}",
                 "${fileDirname}\\hash.cpp",
                 "${fileDirname}\\block.cpp",
+                "${fileDirname}\\blockchain.cpp",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
             ],

@@ -1,21 +1,93 @@
 #include "block.h"
 
-block::block(const std::string &description, const std::string &data)
+block::block()
 {
-    m_prevBlock = nullptr; 
-    m_prevHash = "";
-    m_index = 0; // genesis block
-    m_description = description;
-    m_data = new std::string(); *m_data = data;
+    m_data = new std::string();
 }
-block::block(const block *prevBlock, const std::string &description, const std::string &data) : block(description, data)
+block::block(block &newBlock) : block()
 {
-    m_prevBlock = prevBlock;
-    m_prevHash = hash::sha1(m_prevBlock->toString());
-    m_index = m_prevBlock->index() + 1;
+    m_prevHash = newBlock.prevHash();
+    m_index = newBlock.index();
+    m_description = newBlock.description();
+    *m_data = newBlock.data();
+}   
+block::block(const std::string &newPrevHash, const size_t newIndex, const std::string &newDescription, const std::string &newData) : 
+    block()
+{
+    m_prevHash = newPrevHash;
+    m_index = newIndex; // genesis block
+    m_description = newDescription;
+    *m_data = newData;
 }
-block::block(const std::string &strBlock)
+block::block(const std::string &strBlock) :
+    block()
 {
+    this->fromString(strBlock);
+}
+block::~block()
+{
+    delete m_data;
+}
+
+/* getters */
+
+size_t block::index() const
+{
+    return m_index;
+}
+std::string block::prevHash() const
+{
+    return m_prevHash;
+}
+std::string block::description() const
+{
+    return m_description;
+}
+std::string block::data() const
+{
+    return *m_data;
+}
+
+/* setters */
+
+void block::setPrevHash(const std::string &newPrevHash)
+{
+    m_prevHash = newPrevHash;
+}
+void block::setIndex(const size_t &newIndex)
+{
+    m_index = newIndex;
+}
+void block::setDescription(const std::string &newDescription)
+{
+    m_description = newDescription;
+}
+void block::setData(const std::string &newData)
+{
+    *(m_data) = newData;
+}
+
+/* work with strings */
+
+std::string block::toString() const
+{
+    //   prevHash  //
+    //    index    //
+    // description //
+    //    data     //
+    std::stringstream ss;                 
+    ss << m_prevHash << "\n"
+    << std::to_string(m_index) << "\n"
+    << m_description << "\n"
+    << *m_data;
+    return ss.str();
+}
+void block::fromString(const std::string &strBlock)
+{
+    //   prevHash  //
+    //    index    //
+    // description //
+    //    data     //
     std::stringstream ss; 
     std::string buff;
     char b;
@@ -32,53 +104,4 @@ block::block(const std::string &strBlock)
         b = ss.peek();
         if(ss.peek() != -1) *m_data += b;
     }
-    ss >> *m_data;
-}
-block::~block()
-{
-    delete m_data;
-}
-size_t block::index() const
-{
-    return this->m_index;
-}
-std::string block::prevHash() const
-{
-    return this->m_prevHash;
-}
-std::string block::description() const
-{
-    return this->m_description;
-}
-std::string block::data() const
-{
-    return *this->m_data;
-}
-void block::setDescription(const std::string &description)
-{
-    m_description = description;
-}
-void block::setData(const std::string &data)
-{
-    *(m_data) = data;
-}
-std::string block::toString() const
-{
-    //   prevHash  //
-    //    index    //
-    // description //
-    //    data     //
-    std::stringstream ss;                 
-    ss << m_prevHash << "\n"
-    << std::to_string(m_index) << "\n"
-    << m_description << "\n"
-    << *m_data;
-    return ss.str();
-}
-void block::writeFile(const std::string &blockPath) const
-{
-    const std::string filename = blockPath + std::to_string(m_index) + ".txt";
-    std::ofstream fout(filename);
-    fout << this->toString();
-    fout.close();
 }

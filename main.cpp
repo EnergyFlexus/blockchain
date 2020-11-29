@@ -1,16 +1,13 @@
 #include <iostream>
-#include "block.h"
+#include "blockchain.h"
 
-#define BLOCKS_PATH "blocks/"
+#define BLOCKCHAIN_PATH "blocks/"
 
 int main()
 {
-    block genesis("desc: gen", "data");
-    block a(&genesis,"1", "data");
-    block b(&a,"123", "data3");
-    genesis.writeFile(BLOCKS_PATH);
-    a.writeFile(BLOCKS_PATH);
-    b.writeFile(BLOCKS_PATH);
+    blockchain chain(BLOCKCHAIN_PATH);
+    chain.addBlock("thats desc1", "data1");
+    chain.addBlock("thats desc2", "data2");
     return 0;
 }
 /*

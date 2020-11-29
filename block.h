@@ -6,14 +6,13 @@
 #include <sstream>
 #include <fstream>
 
-#include "hash.h"
-
 class block
 {
     public:
 
-    block(const std::string &description, const std::string &data); // genesis block
-    block(const block *prevBlock, const std::string &description, const std::string &data);
+    block();
+    block(block &newBlock);
+    block(const std::string &newPrevHash, const size_t newIndex, const std::string &newDescription, const std::string &newData);
     explicit block(const std::string &strBlock); // get block from string
     ~block();
 
@@ -24,17 +23,16 @@ class block
     std::string data() const;
 
     /* setters */
-    void setDescription(const std::string &description);
-    void setData(const std::string &data);
+    void setPrevHash(const std::string &newPrevHash);
+    void setIndex(const size_t &newIndex);
+    void setDescription(const std::string &newDescription);
+    void setData(const std::string &newData);
 
     /* work with strings */
     std::string toString() const;
-
-    /* work with files */
-    void writeFile(const std::string &blockPath) const;
+    void fromString(const std::string &strBlock);
 
     private:
-    const block *m_prevBlock;
     std::string m_prevHash;
     size_t m_index;
     std::string m_description;
