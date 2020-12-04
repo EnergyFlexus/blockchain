@@ -21,6 +21,7 @@ class block
     std::string prevHash() const;
     std::string description() const;
     std::string data() const;
+    const std::string* block::pdata() const;
 
     /* setters */
     void setPrevHash(const std::string &newPrevHash);

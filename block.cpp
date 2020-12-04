@@ -47,7 +47,10 @@ std::string block::data() const
 {
     return *m_data;
 }
-
+const std::string* block::pdata() const
+{
+    return m_data;
+}
 /* setters */
 
 void block::setPrevHash(const std::string &newPrevHash)
