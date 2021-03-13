@@ -2,14 +2,13 @@
 
 block::block()
 {
-    m_data = new std::string();
 }
-block::block(block &newBlock) : block()
+block::block(const block &newBlock) : block()
 {
     m_prevHash = newBlock.prevHash();
     m_index = newBlock.index();
     m_description = newBlock.description();
-    *m_data = newBlock.data();
+    m_data = newBlock.data();
 }   
 block::block(const std::string &newPrevHash, const size_t newIndex, const std::string &newDescription, const std::string &newData) : 
     block()
@@ -17,16 +16,14 @@ block::block(const std::string &newPrevHash, const size_t newIndex, const std::s
     m_prevHash = newPrevHash;
     m_index = newIndex; // genesis block
     m_description = newDescription;
-    *m_data = newData;
+    m_data = newData;
 }
-block::block(const std::string &strBlock) :
-    block()
+block::block(const std::string &strBlock) : block()
 {
     this->fromString(strBlock);
 }
 block::~block()
 {
-    delete m_data;
 }
 
 /* getters */
@@ -45,12 +42,9 @@ std::string block::description() const
 }
 std::string block::data() const
 {
-    return *m_data;
-}
-const std::string* block::pdata() const
-{
     return m_data;
 }
+
 /* setters */
 
 void block::setPrevHash(const std::string &newPrevHash)
@@ -67,7 +61,7 @@ void block::setDescription(const std::string &newDescription)
 }
 void block::setData(const std::string &newData)
 {
-    *(m_data) = newData;
+    m_data = newData;
 }
 
 /* work with strings */
@@ -82,7 +76,7 @@ std::string block::toString() const
     ss << m_prevHash << "\n"
     << std::to_string(m_index) << "\n"
     << m_description << "\n"
-    << *m_data;
+    << m_data;
     return ss.str();
 }
 void block::fromString(const std::string &strBlock)
@@ -95,7 +89,7 @@ void block::fromString(const std::string &strBlock)
     std::string buff;
     char b;
     ss << strBlock;
-    m_data->clear();
+    m_data.clear();
 
     ss >> m_prevHash;
     ss >> m_index;
@@ -103,8 +97,8 @@ void block::fromString(const std::string &strBlock)
     while(!ss.eof())
     {
         ss >> buff;
-        *m_data += buff;
+        m_data += buff;
         b = ss.peek();
-        if(ss.peek() != -1) *m_data += b;
+        if(ss.peek() != -1) m_data += b;
     }
 }
