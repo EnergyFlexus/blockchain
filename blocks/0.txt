@@ -1,0 +1,4 @@
+
+0
+genesis block
+Hello, blockchain!
