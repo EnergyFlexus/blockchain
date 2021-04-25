@@ -4,6 +4,7 @@
 #define BLOCKCHAIN_PATH "blocks/"
 
 /* Чтобы все норм работало установи OpenSSL и пропиши его в Path */
+/* И еще ручками создай папку пустую, потом мб програмно создавать будем */
 
 int main()
 {
@@ -11,6 +12,9 @@ int main()
     chain.addBlock("thats desc1", "data1");
     chain.addBlock("thats desc2", "data2");
     chain.deleteBlocks(2);
+    chain.addBlock("thats desc1", "data1");
+    chain.addBlock("thats desc2", "data2");
+    std::cout << chain.isValid();
     return 0;
 }
 /*

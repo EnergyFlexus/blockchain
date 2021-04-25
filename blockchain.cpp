@@ -1,11 +1,14 @@
 #include "blockchain.h"
-#include <iostream>
+
 
 blockchain::blockchain(const std::string &_blockchainPath, const std::string &_description, const std::string &_data) : 
     m_blockchainPath(_blockchainPath)
 {
-    m_lastIndex = 0;
-    this->addGenBlock(_description, _data);
+    // мб бч уже есть, надо почекать че там, ток проверку на валидность не делаю, тут уж сами решайте когда и где ее делать
+    m_lastIndex = this->isAlreadyExist();
+
+    // ну если блоков нет то делаем генезисный и кайфуем
+    if(!m_lastIndex) this->addGenBlock(_description, _data);
 }
 blockchain::~blockchain(){}
 std::string blockchain::blockchainPath() const
@@ -32,8 +35,16 @@ void blockchain::addBlock(const std::string &_description, const std::string &_d
 }
 void blockchain::deleteBlocks(const size_t _count)
 {
-    for(; m_lastIndex >= _count; m_lastIndex--) 
-        remove(std::string(m_blockchainPath + std::to_string(m_lastIndex) + EXTENSION).c_str());
+    size_t i = m_lastIndex;
+    for(; i > m_lastIndex - _count && i != 0; i--) 
+        remove(std::string(m_blockchainPath + std::to_string(i) + EXTENSION).c_str());
+    m_lastIndex = i;
+}
+size_t blockchain::isValid()
+{
+    // с нуля пересчитываем хэши и сравниваем, где хэш не тот то и возвращаем, если все ок то 0
+    for(size_t i = 1; i <= m_lastIndex; i++) if(hash::sha1(getFile(i - 1)) != getHash(i)) return i;
+    return 0;
 }
 void blockchain::addGenBlock(const std::string &_description, const std::string &_data)
 {
@@ -54,11 +65,26 @@ void blockchain::writeBlock(const block *_block)
     fout << _block->toString();
     fout.close();
 }
+size_t blockchain::isAlreadyExist()
+{
+    size_t i = 0;
+    struct stat b;
+    // вот этот вот stat возвращает -1 если файла нет, но ему еще надо заполнить struct stat, так что ток так
+    for(;;i++) if(stat(std::string(m_blockchainPath + std::to_string(i) + EXTENSION).c_str(), &b) == -1) break;
+    return i - 1;
+}
 std::string blockchain::getHash(size_t _index)
 {
     std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
     std::string result;
     std::ifstream fin(filename);
+        
+    if(!fin.is_open())
+    {
+        std::cerr << "Err. Is path to blockchain is valid?";
+        exit(1);
+    }
+
     fin >> result;
     return result;
 }
@@ -67,6 +93,13 @@ std::string blockchain::getFile(size_t _index)
     std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
     std::string result;
     std::ifstream fin(filename);
+
+    if(!fin.is_open())
+    {
+        std::cerr << "Err. Is path to blockchain is valid?";
+        exit(1);
+    }
+
     std::string buff;
     char b;
     while(!fin.eof())
