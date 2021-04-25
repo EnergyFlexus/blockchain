@@ -16,8 +16,6 @@
 #define GENESIS_DATA "Hello, blockchain!"
 #define EXTENSION ".txt"
 
-/* TODO: checking hashes, checking existing chain, ... */
-
 class blockchain
 {
 public:
