@@ -3,18 +3,16 @@
         {
             "type": "cppbuild",
             "label": "C/C++: g++.exe build active file",
-            "command": "C:\\TrashBin\\MinGW-W64\\mingw32\\bin\\g++.exe",
+            "command": "C:\\TrashBin\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\g++.exe",
             "args": [
                 "-g",
-                "${file}",
-                "${fileDirname}\\hash.cpp",
-                "${fileDirname}\\block.cpp",
-                "${fileDirname}\\blockchain.cpp",
+                "${fileDirname}\\*.cpp",
+                "-std=c++17",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
             ],
             "options": {
-                "cwd": "C:\\TrashBin\\MinGW-W64\\mingw32\\bin"
+                "cwd": "C:\\TrashBin\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin"
             },
             "problemMatcher": [
                 "$gcc"

@@ -4,32 +4,57 @@
 #include "block.h"
 #include "hash.h"
 
+// genesis block - первый блок в блокчейне
+// defines for genesis block
+// extension - расширение
 #define GENESIS_DESC "genesis block"
 #define GENESIS_DATA "Hello, blockchain!"
+#define EXTENSION ".txt"
 
 /* TODO: checking hashes, checking existing chain, ... */
 
 class blockchain
 {
-    public:
+public:
+    // у бч ток один конструктор, остальные в парашу
+    blockchain(const std::string &_blockchainPath, 
+        const std::string &_description = GENESIS_DESC, 
+        const std::string &_data = GENESIS_DATA);
 
-    explicit blockchain(const std::string &newBlockchainPath, 
-        const std::string &newDescription = GENESIS_DESC, 
-        const std::string &newData = GENESIS_DATA);
+    blockchain() = delete;
+    blockchain(const blockchain&) = delete;
+    blockchain(blockchain&&) = delete;
 
     ~blockchain();
 
-    void addBlock(const std::string &newDescription, const std::string &newData);
+    /* getters */
+    std::string blockchainPath() const;
+    size_t lastIndex() const;
 
-    private:
+    // эта параша добавляет блок очевидно
+    void addBlock(const std::string&, const std::string&);
+
+    // эта параша удаляет сколько-то блоков с конца, понадобится если бч окажется невалидной
+    void deleteBlocks(const size_t);
+
+private:
+    // индекс последнего блока(файла), шоб знать какой будет некст
     size_t m_lastIndex;
+
+    // путь от экзешника до папки с блоками(файлами)
     const std::string m_blockchainPath;
 
-    void addGenBlock(const std::string &newDescription, const std::string &newData);
-    void writeBlock(const block *blockToWrite);
+    // добавляет генезисный блок (т.е самый первый в бч)
+    void addGenBlock(const std::string& , const std::string&);
+
+    // пишет блок в файл
+    void writeBlock(const block*);
     
-    std::string getHash(size_t index);
-    std::string getFile(size_t index);
+    // получает хэш из блока(файла)
+    std::string getHash(size_t);
+
+    // получает весь блок(файл)
+    std::string getFile(size_t);
 };
 
 #endif // BLOCKCHAIN_H

@@ -1,24 +1,28 @@
 #include "block.h"
 
+//   prevHash  //
+//    index    //
+// description //
+//    data     //
+
 block::block()
 {
 }
-block::block(const block &newBlock) : block()
+block::block(const block &_block)
 {
-    m_prevHash = newBlock.prevHash();
-    m_index = newBlock.index();
-    m_description = newBlock.description();
-    m_data = newBlock.data();
+    m_prevHash = _block.prevHash();
+    m_index = _block.index();
+    m_description = _block.description();
+    m_data = _block.data();
 }   
-block::block(const std::string &newPrevHash, const size_t newIndex, const std::string &newDescription, const std::string &newData) : 
-    block()
+block::block(const std::string &_prevHash, const size_t _index, const std::string &_description, const std::string &_data)
 {
-    m_prevHash = newPrevHash;
-    m_index = newIndex; // genesis block
-    m_description = newDescription;
-    m_data = newData;
+    m_prevHash = _prevHash;
+    m_index = _index;
+    m_description = _description;
+    m_data = _data;
 }
-block::block(const std::string &strBlock) : block()
+block::block(const std::string &strBlock)
 {
     this->fromString(strBlock);
 }
@@ -47,21 +51,21 @@ std::string block::data() const
 
 /* setters */
 
-void block::setPrevHash(const std::string &newPrevHash)
+void block::setPrevHash(const std::string &_prevHash)
 {
-    m_prevHash = newPrevHash;
+    m_prevHash = _prevHash;
 }
-void block::setIndex(const size_t &newIndex)
+void block::setIndex(const size_t _index)
 {
-    m_index = newIndex;
+    m_index = _index;
 }
-void block::setDescription(const std::string &newDescription)
+void block::setDescription(const std::string &_description)
 {
-    m_description = newDescription;
+    m_description = _description;
 }
-void block::setData(const std::string &newData)
+void block::setData(const std::string &_data)
 {
-    m_data = newData;
+    m_data = _data;
 }
 
 /* work with strings */
@@ -72,6 +76,7 @@ std::string block::toString() const
     //    index    //
     // description //
     //    data     //
+
     std::stringstream ss;                 
     ss << m_prevHash << "\n"
     << std::to_string(m_index) << "\n"
@@ -85,6 +90,7 @@ void block::fromString(const std::string &strBlock)
     //    index    //
     // description //
     //    data     //
+
     std::stringstream ss; 
     std::string buff;
     char b;

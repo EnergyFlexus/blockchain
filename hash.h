@@ -4,7 +4,8 @@
 #include <cstdlib>
 #include <fstream>
 
-#define CURR_PATH "%cd%/"
+// tmp - временные файлы, curr очевидно текущий
+#define CURR_PATH "%cd%/" 
 #define TEMP_PATH "temp/"
 
 namespace hash

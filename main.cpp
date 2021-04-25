@@ -3,11 +3,14 @@
 
 #define BLOCKCHAIN_PATH "blocks/"
 
+/* Чтобы все норм работало установи OpenSSL и пропиши его в Path */
+
 int main()
 {
     blockchain chain(BLOCKCHAIN_PATH);
     chain.addBlock("thats desc1", "data1");
     chain.addBlock("thats desc2", "data2");
+    chain.deleteBlocks(2);
     return 0;
 }
 /*

@@ -11,9 +11,9 @@ class block
     public:
 
     block();
-    block(const block &newBlock);
-    block(const std::string &newPrevHash, const size_t newIndex, const std::string &newDescription, const std::string &newData);
-    explicit block(const std::string &strBlock); // get block from string
+    block(const block&);
+    block(const std::string&, const size_t , const std::string&, const std::string&);
+    explicit block(const std::string&); // get block from string
     ~block();
 
     /* getters */
@@ -23,14 +23,14 @@ class block
     std::string data() const;
 
     /* setters */
-    void setPrevHash(const std::string &newPrevHash);
-    void setIndex(const size_t &newIndex);
-    void setDescription(const std::string &newDescription);
-    void setData(const std::string &newData);
+    void setPrevHash(const std::string&);
+    void setIndex(const size_t);
+    void setDescription(const std::string&);
+    void setData(const std::string&);
 
     /* work with strings */
     std::string toString() const;
-    void fromString(const std::string &strBlock);
+    void fromString(const std::string&);
 
     private:
     std::string m_prevHash;

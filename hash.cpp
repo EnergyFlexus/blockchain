@@ -1,5 +1,7 @@
 #include "hash.h"
 
+// т.к я рот ебал подключать библы то делаю все ультра на костылях через cmd
+
 const std::string fileIn = (std::string)TEMP_PATH + "tempIn";
 const std::string fileOut = (std::string)TEMP_PATH + "tempOut";
 
