@@ -10,13 +10,11 @@
 int main()
 {
     // чисто ради теста создаю + удаляю + кайфую
-    blockchain chain(BLOCKCHAIN_PATH);
-    chain.addBlock("thats desc1", "data1");
-    chain.addBlock("thats desc2", "data2");
-    chain.deleteBlocks(2);
-    chain.addBlock("thats desc1", "data1");
-    chain.addBlock("thats desc2", "data2");
-    std::cout << chain.isValid();
+    std::string str = "123";
+    std::string r = hash::base64Encode(str);
+    std::cout << r << std::endl;
+    std::string a = hash::base64Decode(r);
+    std::cout << a << std::endl;
     return 0;
 }
 // чета тут накопировал, пойдет для Сани
