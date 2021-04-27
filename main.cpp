@@ -7,14 +7,20 @@
 /* И еще ручками создай папку пустую, потом мб програмно создавать будем */
 /* Да прибудет с вами Бог */
 
-int main()
+int main(int argc, char **argv)
 {
-    // чисто ради теста создаю + удаляю + кайфую
-    std::string str = "123";
-    std::string r = hash::base64Encode(str);
-    std::cout << r << std::endl;
-    std::string a = hash::base64Decode(r);
-    std::cout << a << std::endl;
+    std::string data = "123";
+    std::ifstream fout("myprivate.pem");
+    std::string priv;
+    priv = streamRead(&fout);
+    fout.close();
+    fout.open("mypublic.pem");
+    std::string pub;
+    pub = streamRead(&fout);
+    std::string sign;
+    sign = hash::rsaSign(priv, data);
+    sign = hash::base64Encode(sign);
+    std::cout << hash::rsaVerify(pub, hash::base64Decode(sign), data);
     return 0;
 }
 // чета тут накопировал, пойдет для Сани
