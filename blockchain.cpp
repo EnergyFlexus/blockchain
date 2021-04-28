@@ -1,14 +1,18 @@
 #include "blockchain.h"
 
 
-blockchain::blockchain(const std::string &_blockchainPath, const std::string &_description, const std::string &_data) : 
-    m_blockchainPath(_blockchainPath)
+blockchain::blockchain(const std::string &_blockchainPath,
+    const std::string &_genPublicKey,
+    const std::string &_genPrivateKey,
+    const std::string &_genBindHash,
+    const std::string &_genData) : m_blockchainPath(_blockchainPath)
 {
-    // мб бч уже есть, надо почекать че там, ток проверку на валидность не делаю, тут уж сами решайте когда и где ее делать
+    // мб бч уже есть, надо почекать че там + проверяем хэши, вдруг напакостили
     m_lastIndex = this->isAlreadyExist();
+    if(m_lastIndex) return;
 
     // ну если блоков нет то делаем генезисный и кайфуем
-    if(!m_lastIndex) this->addGenBlock(_description, _data);
+    this->createGenBlock(_genPublicKey, _genPrivateKey, _genBindHash, _genData);
 }
 blockchain::~blockchain(){}
 std::string blockchain::blockchainPath() const
@@ -19,19 +23,43 @@ size_t blockchain::lastIndex() const
 {
     return m_lastIndex;
 }
-void blockchain::addBlock(const std::string &_description, const std::string &_data)
+block blockchain::createBlock(const std::string &_publicKey,
+    const std::string &_privateKey,
+    const std::string &_data)
 {
-    block *newBlock = new block();
-    std::string prevBlockStr = this->getFile(m_lastIndex);
+    block new_block;
+    
+    // блоки здоровые пипец, так что работаем с их хэшами
+    std::string hashedData = hash::sha1(_data);
+    std::string hashedLastBlock = hash::sha1(this->getBlock(m_lastIndex).toString());
 
-    newBlock->setPrevHash(hash::sha1(prevBlockStr));
-    newBlock->setIndex(m_lastIndex + 1);
-    newBlock->setDescription(_description);
-    newBlock->setData(_data);
+    // взяли кароче ласт блок, присоеденили к нему _data от текущего блока, получили новый хэшик
+    std::string bindHash = hash::sha1(hashedLastBlock + hashedData);
 
-    writeBlock(newBlock);
+    // создали сигну(подпись кароче) и бахнули ее в base64, ибо там без этого будет фулл пиздец, а так хотяб символы какие-то
+    // создаем ее на основе хешированных данных, ибо _data большой очень
+    std::string sign = hash::rsaSign(_privateKey, hashedData);
+    sign = hash::base64Encode(sign);
+
+    new_block.setPublicKey(_publicKey);
+    new_block.setIndex(m_lastIndex + 1);
+    new_block.setBindHash(bindHash);
+    new_block.setSign(sign);
+    new_block.setData(_data);
+
+    return new_block;
+}
+// 0 - все ок; 1 - хэши в говне; 2 - индексы в говне; -1 - эцп в говне;
+int blockchain::addBlock(const block &_new_block)
+{
+    if(_new_block.index() != m_lastIndex + 1)   return 2;
+    if(!isBindHashValid(_new_block))            return 1;
+    if(!isSignValid(_new_block))                return -1;
+
     m_lastIndex++;
-    delete newBlock;
+
+    writeBlock(&_new_block);
+    return 0;
 }
 void blockchain::deleteBlocks(const size_t _count)
 {
@@ -40,22 +68,85 @@ void blockchain::deleteBlocks(const size_t _count)
         remove(std::string(m_blockchainPath + std::to_string(i) + EXTENSION).c_str());
     m_lastIndex = i;
 }
-size_t blockchain::isValid()
+bool blockchain::isBindHashValid(size_t _index) const
 {
-    // с нуля пересчитываем хэши и сравниваем, где хэш не тот то и возвращаем, если все ок то 0
-    for(size_t i = 1; i <= m_lastIndex; i++) if(hash::sha1(getFile(i - 1)) != getHash(i)) return i;
+    return this->isBindHashValid(this->getBlock(_index));
+}
+bool blockchain::isBindHashValid(const block &_block) const
+{
+    if(_block.index() == 0) return true; // если блок генезисный, то че там, хэш всегда верный
+
+    block *prev_block = new block(this->getBlock(_block.index() - 1));
+
+    std::string hashedData = hash::sha1(_block.data());
+    std::string hashedLastBlock = hash::sha1(prev_block->toString());
+    std::string bindHash = hash::sha1(hashedLastBlock + hashedData);
+
+    delete prev_block;
+
+    if(_block.bindHash() == bindHash) return true;
+    return false;
+}
+size_t blockchain::isAllBindHashValid() const
+{
+    for(size_t i = 0; i < m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
     return 0;
 }
-void blockchain::addGenBlock(const std::string &_description, const std::string &_data)
+bool blockchain::isSignValid(size_t _index) const
+{
+    return this->isSignValid(this->getBlock(_index));
+}
+bool blockchain::isSignValid(const block &_block) const
+{
+    std::string sign = hash::base64Decode(_block.sign());
+    std::string hashedData = hash::sha1(_block.data());
+
+    return hash::rsaVerify(_block.publicKey(), sign, hashedData);
+}
+size_t blockchain::isAllSignValid() const
+{
+    for(size_t i = 0; i < m_lastIndex; i++) if(!this->isSignValid(i)) return i;
+    return 0;
+}
+block blockchain::getBlock(size_t _index) const
+{
+    std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
+    std::string buff;
+    block result;
+    std::ifstream fin(filename);
+
+    buff = streamRead(&fin);
+    fin.close();
+    result.fromString(buff);
+
+    return result;
+}
+void blockchain::createGenBlock(const std::string &_genPublicKey,
+    const std::string &_genPrivateKey,
+    const std::string &_genBindHash,
+    const std::string &_genData)
 {
     block *new_block = new block();
 
-    new_block->setPrevHash("");
-    new_block->setIndex(0); // genesis block ofc
-    new_block->setDescription(_description);
-    new_block->setData(_data);
+    // ген блок все дела
+    m_lastIndex = 0;
 
+    // все через хэши, а то обычная дата мб большой
+    std::string hashedData = hash::sha1(_genData);
+
+    // создали сигну(подпись кароче) и бахнули ее в base64, ибо там без этого будет фулл пиздец, а так хотяб символы какие-то
+    std::string sign = hash::rsaSign(_genPrivateKey, hashedData);
+    sign = hash::base64Encode(sign);
+
+    new_block->setPublicKey(_genPublicKey);
+    new_block->setIndex(m_lastIndex);
+    new_block->setBindHash(_genBindHash);
+    new_block->setSign(sign);
+    new_block->setData(_genData);
+
+    // записали в файлик сразу
     writeBlock(new_block);
+
     delete new_block;
 }
 void blockchain::writeBlock(const block *_block)
@@ -71,43 +162,7 @@ size_t blockchain::isAlreadyExist()
     struct stat b;
     // вот этот вот stat возвращает -1 если файла нет, но ему еще надо заполнить struct stat, так что ток так
     for(;;i++) if(stat(std::string(m_blockchainPath + std::to_string(i) + EXTENSION).c_str(), &b) == -1) break;
+    if(i == 0) return 0;
     return i - 1;
 }
-std::string blockchain::getHash(size_t _index)
-{
-    std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
-    std::string result;
-    std::ifstream fin(filename);
-        
-    if(!fin.is_open())
-    {
-        std::cerr << "Err. Is path to blockchain is valid?";
-        exit(1);
-    }
 
-    fin >> result;
-    return result;
-}
-std::string blockchain::getFile(size_t _index)
-{
-    std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
-    std::string result;
-    std::ifstream fin(filename);
-
-    if(!fin.is_open())
-    {
-        std::cerr << "Err. Is path to blockchain is valid?";
-        exit(1);
-    }
-
-    std::string buff;
-    char b;
-    while(!fin.eof())
-    {
-        fin >> buff;
-        result += buff;
-        b = fin.peek();
-        if(fin.peek() != -1) result += b;
-    }
-    return result;
-}

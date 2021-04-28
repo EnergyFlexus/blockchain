@@ -1,4 +1,16 @@
-88bfae864cb5200a52a3153eac9008e479bec32b
+publicKey=
+-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALLihfGHVk6bl2aWUPOvR3BSCKqdUstq
+whFWAAX6M6C+b5i+MB3l3R+Yiqp60Np6TWUl9+pODhc3ZpJkq4/W4H8CAwEAAQ==
+-----END PUBLIC KEY-----
+
+index=
 2
-thats desc2
-data2
+bindHash=
+622a63224f616d85460c588481b600ab5d450f9a
+sign=
+jhi1sJNlcw8+bDGfstNU9ZVGiF+7ZJEHXG8QzltGfY5rUga4OkWu8kNBcyqHhpg1
+ADYgiP4eCcctfKIo8rhsuQ==
+
+data=
+hmmxxx

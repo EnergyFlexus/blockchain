@@ -12,17 +12,17 @@
 // defines for genesis block
 // extension - расширение
 
-#define GENESIS_DESC "genesis block"
-#define GENESIS_DATA "Hello, blockchain!"
 #define EXTENSION ".txt"
 
 class blockchain
 {
 public:
     // у бч ток один конструктор, остальные в парашу
-    blockchain(const std::string &_blockchainPath, 
-        const std::string &_description = GENESIS_DESC, 
-        const std::string &_data = GENESIS_DATA);
+    blockchain(const std::string &_blockchainPath,  // путь до бч
+        const std::string &_genPublicKey,           // пб ключ (ну надо же с чего-то начинать) чтоб оно валидно было
+        const std::string &_genPrivateKey,          // пр ключ
+        const std::string &_genBindHash,            // любой хэшик (можно просто набор символов)
+        const std::string &_genData);               // ну и чета в ген блоке надо
 
     blockchain() = delete;
     blockchain(const blockchain&) = delete;
@@ -34,36 +34,52 @@ public:
     std::string blockchainPath() const;
     size_t lastIndex() const;
 
-    // эта параша добавляет блок очевидно
-    void addBlock(const std::string&, const std::string&);
+    // эта параша создает блок и потом вызывает addBlock, который его добавит в бч
+    block createBlock(const std::string &_publicKey,        // пб ключ
+                const std::string &_privateKey,             // пр ключ
+                const std::string &_data);                  // сама инфа
+
+
+    // эта штука его проверит и решит, добавлять его или нет
+    // 0 - все ок; 1 - хэш в говне; 2 - индекс в говне; -1 - эцп в говне; 
+    int addBlock(const block&);
 
     // эта параша удаляет сколько-то блоков с конца, понадобится если бч окажется невалидной
     void deleteBlocks(const size_t);
 
-    // проверяет валидность бч, выдаст 0 если все ок или выдаст индекс блока где хэши не сошлись
-    size_t isValid();
+    // проверяет валидность блока
+    bool isBindHashValid(size_t) const;
+    bool isBindHashValid(const block&) const;
+
+    // валидность хешей всего бч, вернет индекс того блока, откуда все невалидно, 0 = все ок
+    size_t isAllBindHashValid() const;
+
+    // проверяет эцп у блока
+    bool isSignValid(size_t) const;
+    bool isSignValid(const block&) const;
+
+    // проверяет эцп у всего бч, вернет индекс первого найденного блока с не валдиной эцп, 0 = все ок
+    size_t isAllSignValid() const;
+
+    // получает весь блок(файл)
+    block getBlock(size_t) const;
 
 private:
-    // индекс последнего блока(файла), шоб знать какой будет некст
-    size_t m_lastIndex;
+    size_t m_lastIndex;                 // индекс последнего блока(файла), шоб знать какой будет некст
+    const std::string m_blockchainPath; // путь от экзешника до папки с блоками(файлами)
 
-    // путь от экзешника до папки с блоками(файлами)
-    const std::string m_blockchainPath;
 
-    // добавляет генезисный блок (т.е самый первый в бч)
-    void addGenBlock(const std::string& , const std::string&);
+    // делаем генезисный блок
+    void createGenBlock(const std::string &_genPublicKey,
+        const std::string &_genPrivateKey,
+        const std::string &_genBindHash,
+        const std::string &_genData);
 
     // пишет блок в файл
     void writeBlock(const block*);
 
     // мб бч уже есть в этой папке? выдаст свежий m_lastIndex
     size_t isAlreadyExist();
-    
-    // получает хэш из блока(файла)
-    std::string getHash(size_t);
-
-    // получает весь блок(файл)
-    std::string getFile(size_t);
 };
 
 #endif // BLOCKCHAIN_H

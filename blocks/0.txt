@@ -1,4 +1,16 @@
+publicKey=
+-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBALLihfGHVk6bl2aWUPOvR3BSCKqdUstq
+whFWAAX6M6C+b5i+MB3l3R+Yiqp60Np6TWUl9+pODhc3ZpJkq4/W4H8CAwEAAQ==
+-----END PUBLIC KEY-----
 
+index=
 0
-genesis block
-Hello, blockchain!
+bindHash=
+HiImHash
+sign=
+hM0PEYE+WrPncBSkv31ALL1Ut1VRSXQNn0wpDR7+2RImH+ptFyhe8pQd7WbuBxeo
+jobpkVvcspm3IXEdRkx8ag==
+
+data=
+HELLO ITS GENBLOCK!

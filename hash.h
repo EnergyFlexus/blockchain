@@ -16,7 +16,7 @@ namespace hash
     std::string base64Decode(const std::string &_data);
 
     std::string rsaSign(const std::string &_privateKey, const std::string &_data);
-    bool rsaVerify(const std::string &_publicKey, const std::string &_sign, std::string &_data);
+    bool rsaVerify(const std::string &_publicKey, const std::string &_sign, const std::string &_data);
 }
 
 std::string streamRead(std::istream* strIn);

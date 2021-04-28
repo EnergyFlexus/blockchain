@@ -103,7 +103,7 @@ std::string hash::rsaSign(const std::string &_privateKey, const std::string &_da
 
     return result;
 }
-bool hash::rsaVerify(const std::string &_publicKey, const std::string &_sign, std::string &_data)
+bool hash::rsaVerify(const std::string &_publicKey, const std::string &_sign, const std::string &_data)
 {
     std::ofstream fout(fileIn + "1");
     fout << _publicKey;
