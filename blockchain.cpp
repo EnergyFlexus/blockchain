@@ -22,17 +22,20 @@ block blockchain::createBlock(const std::string &_publicKey,
     const std::string &_data)
 {
     block new_block{};
+
+    // создать блок, когда в нем нет ген блока? Вернем пустой какой-то блок
     if(m_lastIndex == INDEX_NO_GEN_BLOCK) return block();
     
     // блоки здоровые пипец, так что работаем с их хэшами
     std::string hashed_data = hash::sha1(_data);
+
+    // из этого создадим bind_hash (связующий хэш палучаеца)
     std::string hashed_last_block = hash::sha1(this->getBlock(m_lastIndex).toString());
 
     // взяли кароче ласт блок, присоеденили к нему _data от текущего блока, получили новый хэшик
     std::string bind_hash = hash::sha1(hashed_last_block + hashed_data);
 
-    // создали сигну(подпись кароче) - она уже в base64
-    // создаем ее на основе хешированных данных офк (выше уже писал)
+    // создали сигну(подпись кароче) - она уже в base64, так что проблем с записью в файл не будет
     std::string sign = hash::rsaSign(_privateKey, hashed_data);
 
     new_block.setPublicKey(_publicKey);
@@ -43,12 +46,11 @@ block blockchain::createBlock(const std::string &_publicKey,
 
     return new_block;
 }
-// 0 - все ок; 1 - хэши в говне; 2 - индексы в говне; -1 - эцп в говне;
 int blockchain::addBlock(const block &_new_block)
 {
-    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)      return 2;
-    if(!isBindHashValid(_new_block))                                                    return 1;
-    if(!isSignValid(_new_block))                                                        return -1;
+    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)      return -3;
+    if(!isSignValid(_new_block))                                                        return -2;
+    if(!isBindHashValid(_new_block))                                                    return -1;
 
     // проверки прошли, пишем в файл
     m_lastIndex++;
