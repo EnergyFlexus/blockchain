@@ -22,28 +22,29 @@ class block
 {
     public:
 
-    block() = default;
-    block(const block&);
-    explicit block(const std::string&); // get block from string
-    ~block() = default;
+    block           () = default;
+    block           (const block&);
+    explicit block  (const std::string&); // get block from string
+
+    ~block          () = default;
 
     /* getters */
-    std::string publicKey() const;
-    size_t index() const;
-    std::string bindHash() const;
-    std::string sign() const;
-    std::string data() const;
+    std::string publicKey   () const;
+    size_t index            () const;
+    std::string bindHash    () const;
+    std::string sign        () const;
+    std::string data        () const;
 
     /* setters */
-    void setPublicKey(const std::string&);
-    void setIndex(const size_t);
-    void setBindHash(const std::string&);
-    void setSign(const std::string&);
-    void setData(const std::string&);
+    void setPublicKey   (const std::string&);
+    void setIndex       (const size_t);
+    void setBindHash    (const std::string&);
+    void setSign        (const std::string&);
+    void setData        (const std::string&);
 
     /* work with strings */
-    std::string toString() const;
-    void fromString(const std::string&);
+    std::string toString    () const;
+    void fromString         (const std::string&);
 
     private:
     std::string m_publicKey;

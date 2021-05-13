@@ -8,8 +8,6 @@
 #include <cstdlib>
 #include <sys/stat.h>
 
-// genesis block - первый блок в блокчейне
-// defines for genesis block
 // extension - расширение
 
 #define EXTENSION ".txt"
@@ -24,15 +22,15 @@ public:
         const std::string &_genBindHash,            // любой хэшик (можно просто набор символов)
         const std::string &_genData);               // ну и чета в ген блоке надо
 
-    blockchain() = delete;
-    blockchain(const blockchain&) = delete;
-    blockchain(blockchain&&) = delete;
+    blockchain  () = delete;
+    blockchain  (const blockchain&) = delete;
+    blockchain  (blockchain&&) = delete;
 
-    ~blockchain();
+    ~blockchain() = default;
 
     /* getters */
-    std::string blockchainPath() const;
-    size_t lastIndex() const;
+    std::string blockchainPath  () const;
+    size_t lastIndex            () const;
 
     // эта параша создает блок и потом вызывает addBlock, который его добавит в бч
     block createBlock(const std::string &_publicKey,        // пб ключ
@@ -41,7 +39,7 @@ public:
 
 
     // эта штука его проверит и решит, добавлять его или нет
-    // 0 - все ок; 1 - хэш в говне; 2 - индекс в говне; -1 - эцп в говне; 
+    //   0 - все ок; 1 - хэш в говне; 2 - индекс в говне; -1 - эцп в говне;
     int addBlock(const block&);
 
     // эта параша удаляет сколько-то блоков с конца, понадобится если бч окажется невалидной
@@ -52,7 +50,7 @@ public:
     bool isBindHashValid(const block&) const;
 
     // валидность хешей всего бч, вернет индекс того блока, откуда все невалидно, 0 = все ок
-    size_t isAllBindHashValid() const;
+    size_t isBindHashValidAll() const;
 
     // проверяет эцп у блока
     bool isSignValid(size_t) const;
