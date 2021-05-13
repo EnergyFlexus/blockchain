@@ -28,5 +28,12 @@ int main(int argc, char **argv)
     blockchain chain(BLOCKCHAIN_PATH, pub, priv, "HiImHash", "HELLO ITS GENBLOCK!");
     chain.addBlock(chain.createBlock(pub, priv, "hmmm"));
     chain.addBlock(chain.createBlock(pub, priv, "hmmxxx"));
+
+    // если комп слабый и тем более нет ссд, а у тебя норм там блоков, лучше закомменти эти две строки))0)
+    // эти костылявые хэширования через файлики фулл тильтовые, 10 блоков - даже у меня секунду висит, хех
+    // надо будет потом по нормальному сделать офк
+
+    std::cout << chain.isBindHashValidAll() << std::endl;
+    std::cout << chain.isSignValidAll() << std::endl;
     return 0;
 }

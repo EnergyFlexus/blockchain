@@ -9,18 +9,22 @@
 #include <sys/stat.h>
 
 // extension - расширение
-
 #define EXTENSION ".txt"
+
+#define ERR_NO_GEN_BLOCK (size_t)(-1)
 
 class blockchain
 {
 public:
-    // у бч ток один конструктор, остальные в парашу
-    blockchain(const std::string &_blockchainPath,  // путь до бч
-        const std::string &_genPublicKey,           // пб ключ (ну надо же с чего-то начинать) чтоб оно валидно было
-        const std::string &_genPrivateKey,          // пр ключ
-        const std::string &_genBindHash,            // любой хэшик (можно просто набор символов)
-        const std::string &_genData);               // ну и чета в ген блоке надо
+    // блокчейн без создания ген блока (юзать можно если знаем, что бч есть где-то у кого-то)
+    explicit blockchain(const std::string& _blockchainPath);    // путь до бч
+
+    // поищет бч, если его нет - создаст свой ген блок
+    explicit blockchain(const std::string &_blockchainPath,     // путь до бч
+        const std::string &_genPublicKey,                       // пб ключ (ну надо же с чего-то начинать) чтоб оно валидно было
+        const std::string &_genPrivateKey,                      // пр ключ
+        const std::string &_genBindHash,                        // любой хэшик (можно просто набор символов)
+        const std::string &_genData);                           // ну и чета в ген блоке надо
 
     blockchain  () = delete;
     blockchain  (const blockchain&) = delete;
@@ -57,7 +61,7 @@ public:
     bool isSignValid(const block&) const;
 
     // проверяет эцп у всего бч, вернет индекс первого найденного блока с не валдиной эцп, 0 = все ок
-    size_t isAllSignValid() const;
+    size_t isSignValidAll() const;
 
     // получает весь блок(файл)
     block getBlock(size_t) const;
