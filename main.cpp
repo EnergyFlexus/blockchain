@@ -25,7 +25,11 @@ int main(int argc, char **argv)
     pub = streamRead(&fin);
     fin.close();
 
-    blockchain chain(BLOCKCHAIN_PATH, pub, priv, "HiImHash", "HELLO ITS GENBLOCK!");
+    blockchain chain(BLOCKCHAIN_PATH);
+
+    // не забываем про ген блок, если его нет вдруг
+    if(chain.lastIndex() == INDEX_NO_GEN_BLOCK) chain.createGenBlock(pub, priv, "HiIAmHash", "I AM A GENBLOCK!!!");
+
     chain.addBlock(chain.createBlock(pub, priv, "hmmm"));
     chain.addBlock(chain.createBlock(pub, priv, "hmmxxx"));
 

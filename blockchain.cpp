@@ -9,18 +9,6 @@ blockchain::blockchain(const std::string& _blockchainPath) : m_blockchainPath(_b
     // мб тут проверка на то, есть ли что-то у других пользователей
     // ..
 }
-
-blockchain::blockchain(const std::string &_blockchainPath,
-    const std::string &_genPublicKey,
-    const std::string &_genPrivateKey,
-    const std::string &_genBindHash,
-    const std::string &_genData) : blockchain(_blockchainPath)
-{
-    if(m_lastIndex != ERR_NO_GEN_BLOCK) return;
-
-    // ну если блоков нет то делаем генезисный и кайфуем
-    this->createGenBlock(_genPublicKey, _genPrivateKey, _genBindHash, _genData);
-}
 std::string blockchain::blockchainPath() const
 {
     return m_blockchainPath;
@@ -33,7 +21,8 @@ block blockchain::createBlock(const std::string &_publicKey,
     const std::string &_privateKey,
     const std::string &_data)
 {
-    block new_block;
+    block new_block{};
+    if(m_lastIndex == INDEX_NO_GEN_BLOCK) return block();
     
     // блоки здоровые пипец, так что работаем с их хэшами
     std::string hashed_data = hash::sha1(_data);
@@ -58,9 +47,9 @@ block blockchain::createBlock(const std::string &_publicKey,
 // 0 - все ок; 1 - хэши в говне; 2 - индексы в говне; -1 - эцп в говне;
 int blockchain::addBlock(const block &_new_block)
 {
-    if(_new_block.index() != m_lastIndex + 1)   return 2;
-    if(!isBindHashValid(_new_block))            return 1;
-    if(!isSignValid(_new_block))                return -1;
+    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)    return 2;
+    if(!isBindHashValid(_new_block))                                            return 1;
+    if(!isSignValid(_new_block))                                                return -1;
 
     // проверки прошли, пишем в файл
     m_lastIndex++;
@@ -95,6 +84,7 @@ bool blockchain::isBindHashValid(const block &_block) const
 }
 size_t blockchain::isBindHashValidAll() const
 {
+    if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
     for(size_t i = 0; i < m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
     return 0;
 }
@@ -111,6 +101,7 @@ bool blockchain::isSignValid(const block &_block) const
 }
 size_t blockchain::isSignValidAll() const
 {
+    if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
     for(size_t i = 0; i < m_lastIndex; i++) if(!this->isSignValid(i)) return i;
     return 0;
 }
@@ -132,6 +123,9 @@ void blockchain::createGenBlock(const std::string &_genPublicKey,
     const std::string &_genBindHash,
     const std::string &_genData)
 {
+    // если ген блок уже есть то выходим
+    if(m_lastIndex != INDEX_NO_GEN_BLOCK) return;
+
     block new_block;
 
     // ген блок все дела
@@ -166,7 +160,7 @@ size_t blockchain::isAlreadyExist()
     struct stat b;
     // вот этот вот stat возвращает -1 если файла нет, но ему еще надо заполнить struct stat, так что ток так
     for(;;i++) if(stat(std::string(m_blockchainPath + std::to_string(i) + EXTENSION).c_str(), &b) == -1) break;
-    if(i == 0) return ERR_NO_GEN_BLOCK;
+    if(i == 0) return INDEX_NO_GEN_BLOCK;
     return i - 1;
 }
 

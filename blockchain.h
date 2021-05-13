@@ -11,20 +11,13 @@
 // extension - расширение
 #define EXTENSION ".txt"
 
-#define ERR_NO_GEN_BLOCK (size_t)(-1)
+#define INDEX_NO_GEN_BLOCK (size_t)(-1)
 
 class blockchain
 {
 public:
-    // блокчейн без создания ген блока (юзать можно если знаем, что бч есть где-то у кого-то)
-    explicit blockchain(const std::string& _blockchainPath);    // путь до бч
 
-    // поищет бч, если его нет - создаст свой ген блок
-    explicit blockchain(const std::string &_blockchainPath,     // путь до бч
-        const std::string &_genPublicKey,                       // пб ключ (ну надо же с чего-то начинать) чтоб оно валидно было
-        const std::string &_genPrivateKey,                      // пр ключ
-        const std::string &_genBindHash,                        // любой хэшик (можно просто набор символов)
-        const std::string &_genData);                           // ну и чета в ген блоке надо
+    explicit blockchain(const std::string& _blockchainPath);    // путь до бч                   
 
     blockchain  () = delete;
     blockchain  (const blockchain&) = delete;
@@ -40,6 +33,12 @@ public:
     block createBlock(const std::string &_publicKey,        // пб ключ
                 const std::string &_privateKey,             // пр ключ
                 const std::string &_data);                  // сама инфа
+
+    // делаем генезисный блок
+    void createGenBlock(const std::string &_genPublicKey,   // пб ключ (ну надо же с чего-то начинать) чтоб оно валидно было
+        const std::string &_genPrivateKey,                  // пр ключ
+        const std::string &_genBindHash,                    // любой хэшик (можно просто набор символов)
+        const std::string &_genData);                       // ну и чета в ген блоке надо
 
 
     // эта штука его проверит и решит, добавлять его или нет
@@ -69,13 +68,6 @@ public:
 private:
     size_t m_lastIndex;                 // индекс последнего блока(файла), шоб знать какой будет некст
     const std::string m_blockchainPath; // путь от экзешника до папки с блоками(файлами)
-
-
-    // делаем генезисный блок
-    void createGenBlock(const std::string &_genPublicKey,
-        const std::string &_genPrivateKey,
-        const std::string &_genBindHash,
-        const std::string &_genData);
 
     // пишет блок в файл
     void writeBlock(const block*);

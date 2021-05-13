@@ -5,12 +5,12 @@ whFWAAX6M6C+b5i+MB3l3R+Yiqp60Np6TWUl9+pODhc3ZpJkq4/W4H8CAwEAAQ==
 -----END PUBLIC KEY-----
 
 index=
-0
+3
 bindHash=
-HiIAmHash
+fc2e0a641d8ed5e15f6eb6791a3311aa961df776
 sign=
-fezHMqZslbXr75puaw0KMoQWzszG9CTz8Kj896WZBD46usIityKYoC8Q5pYtRluR
-ju5ObSxmIh/vTkYDsGEE7Bs=
+H988aL7O+w4+U8P5xFZc6E3H1XMSkGZG7ZfRpGMYMlKoXyaCNQQ1llRIoHjRYbqf
+k05itF+WjkFpSBy2skGnQg==
 
 data=
-I AM A GENBLOCK!!!
+hmmm
