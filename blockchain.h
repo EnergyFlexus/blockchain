@@ -11,6 +11,7 @@
 // extension - расширение
 #define EXTENSION ".txt"
 
+// Если еще ничего нет, или же он не нашел генезисный блок, в ластиндексе будет это
 #define INDEX_NO_GEN_BLOCK (size_t)(-1)
 
 class blockchain
@@ -58,9 +59,6 @@ public:
     // проверяет эцп у блока
     bool isSignValid(size_t) const;
     bool isSignValid(const block&) const;
-
-    // проверяет эцп у всего бч, вернет индекс первого найденного блока с не валдиной эцп, 0 = все ок
-    size_t isSignValidAll() const;
 
     // получает весь блок(файл)
     block getBlock(size_t) const;

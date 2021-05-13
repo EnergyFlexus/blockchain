@@ -1,4 +1,5 @@
 #include <iostream>
+#include <ctime>
 #include "blockchain.h"
 #include "block.h"
 
@@ -30,14 +31,17 @@ int main(int argc, char **argv)
     // не забываем про ген блок, если его нет вдруг
     if(chain.lastIndex() == INDEX_NO_GEN_BLOCK) chain.createGenBlock(pub, priv, "HiIAmHash", "I AM A GENBLOCK!!!");
 
-    chain.addBlock(chain.createBlock(pub, priv, "hmmm"));
-    chain.addBlock(chain.createBlock(pub, priv, "hmmxxx"));
+    /* 
+    для суицидников 
+    for(int i = 0; i < 25; i++)
+    {
+        std::string data = "hah - " + std::to_string(i);
+        block buff = chain.createBlock(pub, priv, data);
+        chain.addBlock(buff);
+    }
+    */
 
-    // если комп слабый и тем более нет ссд, а у тебя норм там блоков, лучше закомменти эти две строки))0)
-    // эти костылявые хэширования через файлики фулл тильтовые, 10 блоков - даже у меня секунду висит, хех
-    // надо будет потом по нормальному сделать офк
-
+    chain.addBlock(chain.createBlock(pub, priv, "hello!"));
     std::cout << chain.isBindHashValidAll() << std::endl;
-    std::cout << chain.isSignValidAll() << std::endl;
     return 0;
 }

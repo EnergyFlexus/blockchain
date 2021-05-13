@@ -31,10 +31,9 @@ block blockchain::createBlock(const std::string &_publicKey,
     // взяли кароче ласт блок, присоеденили к нему _data от текущего блока, получили новый хэшик
     std::string bind_hash = hash::sha1(hashed_last_block + hashed_data);
 
-    // создали сигну(подпись кароче) и бахнули ее в base64, ибо там без этого будет фулл пиздец, а так хотяб символы какие-то
+    // создали сигну(подпись кароче) - она уже в base64
     // создаем ее на основе хешированных данных офк (выше уже писал)
     std::string sign = hash::rsaSign(_privateKey, hashed_data);
-    sign = hash::base64Encode(sign);
 
     new_block.setPublicKey(_publicKey);
     new_block.setIndex(m_lastIndex + 1);
@@ -47,9 +46,9 @@ block blockchain::createBlock(const std::string &_publicKey,
 // 0 - все ок; 1 - хэши в говне; 2 - индексы в говне; -1 - эцп в говне;
 int blockchain::addBlock(const block &_new_block)
 {
-    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)    return 2;
-    if(!isBindHashValid(_new_block))                                            return 1;
-    if(!isSignValid(_new_block))                                                return -1;
+    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)      return 2;
+    if(!isBindHashValid(_new_block))                                                    return 1;
+    if(!isSignValid(_new_block))                                                        return -1;
 
     // проверки прошли, пишем в файл
     m_lastIndex++;
@@ -84,6 +83,7 @@ bool blockchain::isBindHashValid(const block &_block) const
 }
 size_t blockchain::isBindHashValidAll() const
 {
+    // проверяем все блоки начиная с 0
     if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
     for(size_t i = 0; i < m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
     return 0;
@@ -94,16 +94,11 @@ bool blockchain::isSignValid(size_t _index) const
 }
 bool blockchain::isSignValid(const block &_block) const
 {
-    std::string sign = hash::base64Decode(_block.sign());
+    // взяли сигну, взяли дату, взяли ключик публичный и проверили, как оно там
+    std::string sign = _block.sign();
     std::string hashed_data = hash::sha1(_block.data());
 
     return hash::rsaVerify(_block.publicKey(), sign, hashed_data);
-}
-size_t blockchain::isSignValidAll() const
-{
-    if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
-    for(size_t i = 0; i < m_lastIndex; i++) if(!this->isSignValid(i)) return i;
-    return 0;
 }
 block blockchain::getBlock(size_t _index) const
 {
@@ -134,9 +129,8 @@ void blockchain::createGenBlock(const std::string &_genPublicKey,
     // все через хэши, а то обычная дата мб большой
     std::string hashedData = hash::sha1(_genData);
 
-    // создали сигну(подпись кароче) и бахнули ее в base64, ибо там без этого будет фулл пиздец, а так хотяб символы какие-то
+    // создали сигну(подпись кароче) - она в base64 сразу ес че
     std::string sign = hash::rsaSign(_genPrivateKey, hashedData);
-    sign = hash::base64Encode(sign);
 
     new_block.setPublicKey(_genPublicKey);
     new_block.setIndex(m_lastIndex);

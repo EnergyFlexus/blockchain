@@ -1,6 +1,6 @@
 #include "hash.h"
 
-// т.к я рот ебал подключать библы то делаю все ультра на костылях через cmd
+// т.к я мне лень подключать библы то делаю все ультра на костылях через cmd
 
 const std::string fileIn = (std::string)TEMP_PATH + "tempIn";
 const std::string fileOut = (std::string)TEMP_PATH + "tempOut";
@@ -76,16 +76,18 @@ std::string hash::base64Decode(const std::string &_data)
 }
 std::string hash::rsaSign(const std::string &_privateKey, const std::string &_data)
 {
-    std::ofstream fout(fileIn + "1");
-    fout << _privateKey;
-    fout.close();
+    std::ofstream fout;
+    std::string result;
 
     fout.open(fileIn);
     fout << _data;
     fout.close();
 
-    std::string result;
-    const std::string command = 
+    fout.open(fileIn + "1");
+    fout << _privateKey;
+    fout.close();
+
+    std::string command = 
     (std::string)"openssl dgst -sha1 -sign "
     + CURR_PATH 
     + fileIn + "1"
@@ -97,7 +99,17 @@ std::string hash::rsaSign(const std::string &_privateKey, const std::string &_da
 
     system(command.c_str());
 
-    std::ifstream fin(fileOut);
+    command = 
+    (std::string)"openssl base64 -in "
+    + CURR_PATH 
+    + fileOut
+    + (std::string)" -out "
+    + CURR_PATH
+    + fileOut + "1";
+
+    system(command.c_str());
+
+    std::ifstream fin(fileOut + "1");
     result = streamRead(&fin);
     fin.close();
 
@@ -105,7 +117,14 @@ std::string hash::rsaSign(const std::string &_privateKey, const std::string &_da
 }
 bool hash::rsaVerify(const std::string &_publicKey, const std::string &_sign, const std::string &_data)
 {
-    std::ofstream fout(fileIn + "1");
+    std::ofstream fout;
+    std::string result;
+
+    fout.open(fileIn);
+    fout << _data;
+    fout.close();
+
+    fout.open(fileIn + "1");
     fout << _publicKey;
     fout.close();
 
@@ -113,18 +132,23 @@ bool hash::rsaVerify(const std::string &_publicKey, const std::string &_sign, co
     fout << _sign;
     fout.close();
 
-    fout.open(fileIn);
-    fout << _data;
-    fout.close();
+    std::string command = 
+    (std::string)"openssl base64 -d -in "
+    + CURR_PATH 
+    + fileIn + "2"
+    + (std::string)" -out "
+    + CURR_PATH
+    + fileOut + "1";
 
-    std::string result;
-    const std::string command = 
+    system(command.c_str());
+
+    command = 
     (std::string)"openssl dgst -sha1 -verify "
     + CURR_PATH 
     + fileIn + "1"
     + (std::string)" -signature "
     + CURR_PATH
-    + fileIn + "2"
+    + fileOut + "1"
     + (std::string)" "
     + fileIn
     + " > "
@@ -150,7 +174,8 @@ std::string streamRead(std::istream* strIn)
         buff = strIn->get();
         
         // adding new sumb
-        if(buff != EOF) str += buff;
+        if(buff != EOF) 
+        str += buff;
     }
     return str;
 }
