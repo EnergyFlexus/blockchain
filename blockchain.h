@@ -30,7 +30,7 @@ public:
     std::string blockchainPath  () const;
     size_t lastIndex            () const;
 
-    // эта параша создает блок и потом вызывает addBlock, который его добавит в бч
+    // эта штука создает блок и потом вызывает addBlock, который его добавит в бч
     block createBlock(const std::string &_publicKey,        // пб ключ
                 const std::string &_privateKey,             // пр ключ
                 const std::string &_data);                  // сама инфа
@@ -43,7 +43,7 @@ public:
 
 
     // эта штука его проверит и решит, добавлять его или нет
-    // 0 - все ок + запишет в файлик; -1 - хэш в говне; -2 - эцп в говне; -3 - индекс в говне;
+    // 0 - все ок + запишет в файлик; -1 - хэш невалиден; -2 - эцп невалидно; -3 - индекс не тот;
     int addBlock(const block&);
 
     // эта параша удаляет сколько-то блоков с конца, понадобится если бч окажется невалидной
@@ -54,7 +54,7 @@ public:
     bool isBindHashValid(const block&) const;
 
     // валидность хешей всего бч, вернет индекс того блока, откуда все невалидно, 0 = все ок
-    size_t isBindHashValidAll() const;
+    size_t isBindHashValidAll();
 
     // проверяет эцп у блока
     bool isSignValid(size_t) const;

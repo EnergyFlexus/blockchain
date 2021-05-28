@@ -5,9 +5,6 @@ blockchain::blockchain(const std::string& _blockchainPath) : m_blockchainPath(_b
 {
     // мб бч уже есть
     m_lastIndex = this->isAlreadyExist();
-
-    // мб тут проверка на то, есть ли что-то у других пользователей
-    // ..
 }
 std::string blockchain::blockchainPath() const
 {
@@ -48,9 +45,9 @@ block blockchain::createBlock(const std::string &_publicKey,
 }
 int blockchain::addBlock(const block &_new_block)
 {
-    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)      return -3;
-    if(!isSignValid(_new_block))                                                        return -2;
     if(!isBindHashValid(_new_block))                                                    return -1;
+    if(!isSignValid(_new_block))                                                        return -2;
+    if(_new_block.index() != m_lastIndex + 1 || m_lastIndex == INDEX_NO_GEN_BLOCK)      return -3;
 
     // проверки прошли, пишем в файл
     m_lastIndex++;
@@ -83,8 +80,9 @@ bool blockchain::isBindHashValid(const block &_block) const
     if(_block.bindHash() == bind_hash) return true;
     return false;
 }
-size_t blockchain::isBindHashValidAll() const
+size_t blockchain::isBindHashValidAll()
 {
+    m_lastIndex = this->isAlreadyExist();
     // проверяем все блоки начиная с 0
     if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
     for(size_t i = 0; i < m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
@@ -107,7 +105,9 @@ block blockchain::getBlock(size_t _index) const
     std::string filename = m_blockchainPath + std::to_string(_index) + EXTENSION;
     std::string buff;
     block result;
+
     std::ifstream fin(filename);
+    if(!fin.is_open()) return block();
 
     buff = streamRead(&fin);
     fin.close();
