@@ -69,6 +69,13 @@ void Connection::addBlock(const block &_block)
 }
 void Connection::slotButtonOkClicked()
 {
+    // если обновляемся - не надо нам сюда
+    if(m_update)
+    {
+        this->addInfo("Waiting for update");
+        return;
+    }
+
     // перед тем как создавать блок чекнем че там
     this->slotButtonUpdateClicked();
 
@@ -188,11 +195,13 @@ void Connection::slotReadDatagrams()
             m_timer->start();
             disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
             connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
+            m_update = true;
         }
         else
         {
             m_timer->stop();
             disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
+            m_update = false;
         }
     }
 }

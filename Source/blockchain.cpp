@@ -85,7 +85,7 @@ size_t blockchain::isBindHashValidAll()
     m_lastIndex = this->isAlreadyExist();
     // проверяем все блоки начиная с 0
     if(m_lastIndex == INDEX_NO_GEN_BLOCK) return 0;
-    for(size_t i = 0; i < m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
+    for(size_t i = 0; i <= m_lastIndex; i++) if(!this->isBindHashValid(i)) return i;
     return 0;
 }
 bool blockchain::isSignValid(size_t _index) const

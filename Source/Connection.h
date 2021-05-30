@@ -36,6 +36,7 @@ class Connection : public QWidget
 
 private:
     int m_port;
+    bool m_update = false;
 
     blockchain *m_blockchain;
     QUdpSocket *m_socket;
