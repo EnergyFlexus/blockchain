@@ -69,15 +69,18 @@ void Connection::addBlock(const block &_block)
 }
 void Connection::slotButtonOkClicked()
 {
+    // перед тем как создавать блок чекнем че там
+    this->slotButtonUpdateClicked();
+
+    // ждем пока нам ответят как там с проверкой дела
+    m_socket->waitForReadyRead();
+
     // если обновляемся - не надо нам сюда
     if(m_update)
     {
         this->addInfo("Waiting for update");
         return;
     }
-
-    // перед тем как создавать блок чекнем че там
-    this->slotButtonUpdateClicked();
 
     // считываем из файликов
     std::string f_private_key = m_linePrivateKey->text().toStdString();
@@ -193,21 +196,17 @@ void Connection::slotReadDatagrams()
             this->writeDatagram(s_need_block + QString::fromStdString(std::to_string(m_blockchain->lastIndex() + 1)));
 
             m_timer->start();
-            disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
-            connect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
+            disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotButtonUpdateClicked()));
+            connect(m_timer, SIGNAL(timeout()), this, SLOT(slotButtonUpdateClicked()));
             m_update = true;
         }
         else
         {
             m_timer->stop();
-            disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotTakeNewIndex()));
+            disconnect(m_timer, SIGNAL(timeout()), this, SLOT(slotButtonUpdateClicked()));
             m_update = false;
         }
     }
-}
-void Connection::slotTakeNewIndex()
-{
-    this->slotButtonUpdateClicked();
 }
 void Connection::slotButtonUpdateClicked()
 {

@@ -81,9 +81,6 @@ private slots:
     // для чтения с сокета
     void slotReadDatagrams();
 
-    // эта штука будет запрашивать новые индексы
-    void slotTakeNewIndex();
-
 public slots:
     // кнопки
     void slotButtonOkClicked();
